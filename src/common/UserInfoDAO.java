@@ -12,6 +12,34 @@ public class UserInfoDAO {
 	PreparedStatement psmt;
 	ResultSet rs;
 	
+	public UserInfoVO updateUser(UserInfoVO vo) {
+		conn = DBcon.getConnect();
+		String sql = "update user_temp set user_phone =? where user_id = ?";
+		String selectsql = "select * from user_temp where user_id = ?";
+		UserInfoVO rvo = new UserInfoVO();
+		
+		try {
+			psmt = conn.prepareStatement(sql);
+			psmt.setString(1, vo.getPhone());
+			psmt.setString(2, vo.getId());
+			int r = psmt.executeUpdate();
+			System.out.println(r+"건 수정");
+		
+			//수정한 데이터 가져오기
+			psmt = conn.prepareStatement(selectsql);
+			psmt.setString(1, vo.getId());
+			rs = psmt.executeQuery();
+			if(rs.next()) {
+				rvo.setPhone(rs.getString("user_phone"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return rvo;
+	}
+	
 	public List<UserInfoVO> UserSelect(){
 		conn = DBcon.getConnect();
 		String selectsql = "select * from user_temp";
@@ -31,31 +59,52 @@ public class UserInfoDAO {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			close();
 		}
 		
 		return list;
 	}
 	
-	public void insertuser(UserInfoVO vo) {
+	public UserInfoVO insertuser(UserInfoVO vo) {
 		conn = DBcon.getConnect();
 		
 		String sql = "insert into user_temp values(?,?,?,?,?)";
-		String select = "select * from user_temp";
+		String selectsql = "select * from user_temp where user_id = ?";
+		UserInfoVO rvo = new UserInfoVO();
 		
 		try {
 			psmt = conn.prepareStatement(sql);
 			psmt.setString(1, vo.getId());
-			psmt.setString(2, vo.getName());
-			psmt.setString(3, vo.getPass());
+			psmt.setString(2, vo.getPass());
+			psmt.setString(3, vo.getName());
 			psmt.setString(4, vo.getPhone());
 			psmt.setString(5, vo.getGender());
 			
 			int r = psmt.executeUpdate();
 			System.out.println(r+"건입력");
 			
+			//입력한 데이터 가져오기
+			psmt = conn.prepareStatement(selectsql);
+			psmt.setString(1, vo.getId());
+			rs = psmt.executeQuery();
+			if(rs.next()) {
+				rvo.setId(rs.getString("user_id"));
+				rvo.setName(rs.getString("user_name"));
+				rvo.setPhone(rs.getString("user_phone"));
+				rvo.setGender(rs.getString("user_gender"));
+			}
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} if (rs != null) {
+		} finally {
+			close();
+		}
+		return rvo;
+	}
+	
+	public void close() {
+		if (rs != null) {
 			try {
 				rs.close();
 			} catch (SQLException e) {
@@ -75,6 +124,6 @@ public class UserInfoDAO {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		}		
+		}
 	}
 }

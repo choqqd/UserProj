@@ -43,7 +43,7 @@ public class UserServlet extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+		response.setCharacterEncoding("UTF-8");
 		MultipartRequest multi = new MultipartRequest(request, "c:/tmp", 8*1024*1024, "UTF-8", new DefaultFileRenamePolicy());
 		
 		String id = multi.getParameter("id");
@@ -63,7 +63,15 @@ public class UserServlet extends HttpServlet {
 		vo.setPhone(phone);
 		vo.setGender(gender);
 		
-		dao.insertuser(vo);
+		UserInfoVO rvo = dao.insertuser(vo);
+		JSONObject obj = new JSONObject();
+		obj.put("id", rvo.getId());
+		obj.put("name", rvo.getName());
+		obj.put("phone",rvo.getPhone());
+		obj.put("gender", rvo.getGender());
+		
+		response.getWriter().print(obj);
+		
 	}
 
 }

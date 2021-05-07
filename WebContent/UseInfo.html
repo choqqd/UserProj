@@ -28,6 +28,7 @@
                 for(i=0;i<result.length;i++){
                 	let trTag = $('<tr />');
                     let btn = $('<button />').html('수정');
+                    btn.click(updateBtn);
 					let text = $('<input />').attr('type',"text");
                     trTag.append(
                             $('<td />').html(result[i].id),
@@ -45,15 +46,32 @@
              }
 		})
 		
+		//수정 버튼
+		function updateBtn(e){
+			let phone = $(this).parent().parent().children().eq(2).children().val();
+			let rphone = $(this).parent().parent().children().eq(2).children();
+			let id = $(this).parent().parent().children().eq(0).html();
+			e.preventDefault();
+			e.stopPropagation();
+			$.ajax({
+				url: 'userUpdataServlet',
+				data: 'id='+id+'&phone='+phone,
+				type: 'post',
+				success: function(result){
+					rphone.attr('value',result);
+				},
+				error: function(err){
+					console.log(err);
+				}
+			});
+		}
+		
+		
 		//서브밋 버튼
 		$('#frm').submit(function(e) {
 			e.preventDefault();
 			let frm = document.getElementById('frm');
             let data = new FormData(frm);
-            for(let k of data.entries()){
-            	console.log(k);
-            }
-			
 
 			$.ajax({
 				contentType: false,
@@ -63,16 +81,18 @@
 				dataType : 'json',
 				data : data,
 				success : function(result) {
-					console.log(result);
 					let trTag = $('<tr />');
-					trTag.append(
-					$('<td />').html(result.id),
-					$('<td />').html(result.name),
-					$('<td />').html(result.phone),
-					$('<td />').html(result.gender)
-					);
-					tbl.append(trTag);
-					$('#show').append(tbl);
+                    let btn = $('<button />').html('수정');
+					let text = $('<input />').attr('type',"text");
+                    trTag.append(
+                            $('<td />').html(result.id),
+                            $('<td />').html(result.name),
+                            $('<td />').append(text.attr('value',result.phone)),
+                            $('<td />').html(result.gender),
+                            $('<td />').append(btn)
+                        );
+                    tbl.append(trTag);
+                    $('#show').append(tbl);
 				},
 				error : function(err) {
 					console.log(err);
