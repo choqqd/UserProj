@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>userInfo.html</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+	$(document).ready(function() {
+		let tbl = $('<table />');
+		tbl.attr('border','1');
+		$.ajax({
+			url: 'userServlet',
+			type : 'get',
+			dataType: 'json',
+			success: function (result) {
+                let title = $('<tr />')
+                title.append(
+                    $('<th />').html('회원번호'),
+                    $('<th />').html('이름'),
+                    $('<th />').html('연락처'),
+                    $('<th />').html('성별'),
+                    $('<th />').html('기능'),
+                )
+                tbl.append(title);
+                for(i=0;i<result.length;i++){
+                	let trTag = $('<tr />');
+                    let btn = $('<button />').html('수정');
+					let text = $('<input />').attr('type',"text");
+                    trTag.append(
+                            $('<td />').html(result[i].id),
+                            $('<td />').html(result[i].name),
+                            $('<td />').append(text.attr('value',result[i].phone)),
+                            $('<td />').html(result[i].gender),
+                            $('<td />').append(btn)
+                        );
+                    tbl.append(trTag);
+                    }
+				$('#show').append(tbl);
+			},
+			 error: function (err) {
+                 console.log(err);
+             }
+		})
+		
+		//서브밋 버튼
+		$('#frm').submit(function(e) {
+			e.preventDefault();
+			let frm = document.getElementById('frm');
+            let data = new FormData(frm);
+            for(let k of data.entries()){
+            	console.log(k);
+            }
+			
+
+			$.ajax({
+				contentType: false,
+                processData: false,
+				url : $('#frm').attr('action'),
+				type : 'post',
+				dataType : 'json',
+				data : data,
+				success : function(result) {
+					console.log(result);
+					let trTag = $('<tr />');
+					trTag.append(
+					$('<td />').html(result.id),
+					$('<td />').html(result.name),
+					$('<td />').html(result.phone),
+					$('<td />').html(result.gender)
+					);
+					tbl.append(trTag);
+					$('#show').append(tbl);
+				},
+				error : function(err) {
+					console.log(err);
+				}
+			});
+		})//서브밋 종료
+
+	});
+</script>
+</head>
+<body>
+	<form id="frm" action="userServlet" method='post'
+		enctype="multipart/form-data">
+		<table border="1">
+			<tr>
+				<th>사용ID</th>
+				<td><input type="text" name="id" id="id"></td>
+			</tr>
+			<tr>
+				<th>이름</th>
+				<td><input type="text" name="name" id="name"></td>
+			</tr>
+			<tr>
+				<th>비밀번호</th>
+				<td><input type="text" name="pass" id="pass"></td>
+			</tr>
+			<tr>
+				<th>연락처</th>
+				<td><input type="text" name="phone" id="phone"></td>
+			</tr>
+			<tr>
+				<th>성별</th>
+				<td><input type="text" name="gender" id="gender" value="남성"></td>
+			</tr>
+			<tr>
+				<th colspan="2"><input type="submit" value="등록"> <input
+					type="reset" value="취소"></th>
+			</tr>
+		</table>
+
+		<div id='show'></div>
+	</form>
+</body>
+</html>
