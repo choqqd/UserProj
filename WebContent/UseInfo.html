@@ -48,6 +48,7 @@
 		
 		//수정 버튼
 		function updateBtn(e){
+			console.log($(this).parent().parent().children().eq(0).html());
 			let phone = $(this).parent().parent().children().eq(2).children().val();//수정할 phone val값
 			let rphone = $(this).parent().parent().children().eq(2).children(); //수정할 id값
 			let id = $(this).parent().parent().children().eq(0).html(); //수정할 phone의 input
