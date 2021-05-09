@@ -17,7 +17,7 @@ public class UserInfoDAO {
 		String sql = "update user_temp set user_phone =? where user_id = ?";
 		String selectsql = "select * from user_temp where user_id = ?";
 		UserInfoVO rvo = new UserInfoVO();
-		
+		//받아온 아이디 값과 폰번호로 업데이트
 		try {
 			psmt = conn.prepareStatement(sql);
 			psmt.setString(1, vo.getPhone());
@@ -36,11 +36,11 @@ public class UserInfoDAO {
 			e.printStackTrace();
 		}
 		
-		
+		//수정된 폰번호를 넘겨줌
 		return rvo;
 	}
 	
-	public List<UserInfoVO> UserSelect(){
+	public List<UserInfoVO> UserSelect(){ //전체 데이터 가져오기
 		conn = DBcon.getConnect();
 		String selectsql = "select * from user_temp";
 		List<UserInfoVO> list = new ArrayList<UserInfoVO>();
@@ -72,7 +72,7 @@ public class UserInfoDAO {
 		String sql = "insert into user_temp values(?,?,?,?,?)";
 		String selectsql = "select * from user_temp where user_id = ?";
 		UserInfoVO rvo = new UserInfoVO();
-		
+		// 데이터 입력
 		try {
 			psmt = conn.prepareStatement(sql);
 			psmt.setString(1, vo.getId());
